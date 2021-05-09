@@ -1,0 +1,3 @@
+TOKEN = '1852705895:AAHJLSeJ16C7rRsYPsehsdLCu3GTLtpTSE8'
+text = ''
+id = 0
