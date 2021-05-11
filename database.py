@@ -1,6 +1,3 @@
-#pylint:disable=W0703
-#pylint:disable=W0622
-#pylint:disable=W1309
 import sqlite3
 
 class DataBase():
@@ -17,7 +14,7 @@ class DataBase():
             
 		try:
 			self.sql.execute("""CREATE TABLE oder
-                                  (id, url, task, money)
+                                  (id, url, task, money, comment)
                                """)
 		except Exception as e:
 			print(e, 20)
@@ -26,7 +23,7 @@ class DataBase():
 		self.sql.execute(f""" SELECT id FROM users WHERE id = {userID} """)
 		if self.sql.fetchone() is None:
 			# self.sql.execute("SELECT id FROM users")
-			self.sql.execute(f"INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)", (userID, 0, 0, 0, 0, 0))
+			self.sql.execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)", (userID, 0, 0, 0, 0, 0))
 		self.db.commit()
         
 	def getBalance(self, id):
@@ -36,7 +33,10 @@ class DataBase():
 		b = b.replace('(', '')
 		b = b.replace(',', '')
 		b = b.replace(')', '')
-		b = int(b)
+		try:
+			b = int(b)
+		except:
+			b = float(b)
 		return b
 		
 	def setCash(self, idAns, cash):
@@ -46,13 +46,6 @@ class DataBase():
 		except Exception as e:
 			print(e, 45)
 		self.db.commit()
-		
-	def setAns(self, id, ans):
-		try:
-			self.sql.execute(f'SELECT ans FROM users WHERE id = {id}')
-			self.sql.execute(f'UPDATE users SET ans = {ans} WHERE id = {id}')
-		except Exception as e:
-			print(e, 53)
 			
 	def getAns(self, id):
 		self.sql.execute(f""" SELECT ans FROM users WHERE id = {id} """)
@@ -90,8 +83,12 @@ class DataBase():
 		b = b.replace('(', '')
 		b = b.replace(',', '')
 		b = b.replace(')', '')
-		b = int(b)
-		b-=sum
+		try:
+			b = float(b)
+			b-=sum
+		except:
+			b = int(b)
+			b-=sum
 		self.sql.execute(f' UPDATE users SET money = {b} WHERE id = {id} ')
 		self.db.commit()
 		
@@ -111,12 +108,13 @@ class DataBase():
 			print(e, 111)
 			return [0]
 			
-	def setRef(self, ref):
+	def setRef(self, id, ref):
 		try:
-			self.sql.execute(f'SELECT ref FROM users WHERE id = {id}')
+			self.sql.execute(f'SELECT refid FROM users WHERE id = {id}')
 			self.sql.execute(f'UPDATE users SET refid = {ref} WHERE id = {id}')
+			self.db.commit()
 		except Exception as e:
-			print(e, 119)
+			print(e, 117)
 			
 	def getRef(self, id):
 		self.sql.execute(f""" SELECT refid FROM users WHERE id = {id} """)
@@ -126,4 +124,131 @@ class DataBase():
 		b = b.replace(',', '')
 		b = b.replace(')', '')
 		b = int(b)
+		return 3
+		
+	def setTask(self, id, task):
+		try:
+			self.sql.execute(f"""UPDATE oder SET task = '{task}' WHERE id = {id}""")
+			self.db.commit()
+		except Exception as e:
+			print(e, 134)
+	
+	def setUrl(self, id, link):
+		try:
+			self.sql.execute(f""" UPDATE oder SET url = '{link}' WHERE id = {id} """)
+			self.db.commit()
+		except Exception as e:
+			print(e, 141)
+			
+	def setOder(self, id):
+		try:
+			self.sql.execute(f""" SELECT id FROM oder WHERE id = {id} """)
+			if self.sql.fetchone() is None:
+				self.sql.execute('INSERT INTO oder VALUES(?, ?, ?, ?, ?)', (id, '0', 0, 0, '0'))
+				self.db.commit()
+		except Exception as e:
+			print(e, 150)
+			
+	def getTask(self, id):
+		self.sql.execute(f""" SELECT task FROM oder WHERE id = {id} """)
+		b = self.sql.fetchone()
+		b = str(b[0])
+	
+		return b
+		
+	def setMoney(self, id, s):
+		try:
+			self.sql.execute(f'UPDATE oder SET money = {s} WHERE id = {id}')
+			self.db.commit()
+		except Exception as e:
+			print(e, 134)
+			
+	def getWork(self, num):
+		self.sql.execute(""" SELECT task FROM oder""")
+		b = self.sql.fetchall()
+		i=0
+		f = True
+		for el in b:
+			el = str(el)
+			el = el.replace('(', '')
+			el = el.replace(',', '')
+			el = el.replace('\'', '')
+			el = el.replace(')', '')
+			self.sql.execute(""" SELECT money FROM oder WHERE rowid = '{i}' """)
+			i+=1
+			if i-1>=num and self.sql.fetchone() != 0 and f == True:
+				f = False
+				return el
+		
+	def getNum(self, id):
+		self.sql.execute(f""" SELECT tasks FROM users WHERE id = {id} """)
+		b = self.sql.fetchone()
+		b = str(b)
+		b = b.replace('(', '')
+		b = b.replace(',', '')
+		b = b.replace(')', '')
+		return int(b)
+		
+	def setNum(self, id, num):
+		try:
+			self.sql.execute(f""" SELECT tasks FROM users WHERE id = {id} """)
+			b = self.sql.fetchone()
+			b = str(b)
+			b = b.replace('(', '')
+			b = b.replace(',', '')
+			b = b.replace(')', '')
+			b = int(b)
+			b+=num
+			print(b)
+			self.sql.execute(f' UPDATE users SET tasks = {b} WHERE id = {id} ')
+			self.db.commit()
+		except Exception as e:
+			print(e, 206)
+			
+	def getLink(self, num):
+		self.sql.execute(""" SELECT url FROM oder""")
+		b = self.sql.fetchall()
+		i=0
+		url = []
+		for el in b:
+			el = str(el)
+			el = el.replace('(', '')
+			el = el.replace(',', '')
+			el = el.replace('\'', '')
+			el = el.replace(')', '')
+			self.sql.execute(""" SELECT money FROM oder WHERE rowid = '{i}' """)
+			print(el)
+			url.append(el)
+		return url
+				
+	def getComment(self, num):
+		self.sql.execute(f""" SELECT comment FROM oder WHERE rowid = {num} """)
+		b = self.sql.fetchone()
+		b = str(b)
+		b = b.replace('(', '')
+		b = b.replace(',', '')
+		b = b.replace(')', '')
+		return b
+		
+	def setComment(self, id, text):
+		try:
+			self.sql.execute(f""" UPDATE oder SET comment = '{text}' WHERE id = {id} """)
+			self.db.commit()
+		except Exception as e:
+			print(e, 243)
+			
+	def setAns(self, id, task):
+		try:
+			self.sql.execute(f"""UPDATE users SET ans = '{task}' WHERE id = {id}""")
+			self.db.commit()
+		except Exception as e:
+			print(e, 245)
+			
+	def getAns(self, id):
+		self.sql.execute(f""" SELECT ans FROM users WHERE id = {id} """)
+		b = self.sql.fetchone()
+		b = str(b)
+		b = b.replace('(', '')
+		b = b.replace(',', '')
+		b = b.replace(')', '')
 		return b
