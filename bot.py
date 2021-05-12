@@ -1,3 +1,4 @@
+#!/usr/binn/python3
 import telebot
 from telebot.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
@@ -152,10 +153,10 @@ def messages(message):
 	if message.chat.id == config.admin:
 		config.text = message.text
 	config.id = message.chat.id
-	if message.text == 'Профиль':
+	if message.text == '🔐Профиль':
 		bot.send_message(message.chat.id, f'📋Имя: {message.from_user.first_name} \n 💳Баланс: {db.getBalance(message.chat.id)} \n Рефералы: {db.getRef(message.chat.id)} \n 📑Количество выплненых заданий: {db.getNum(message.chat.id)}')
 	
-	if message.text == 'Баланс':
+	if message.text == '💳Баланс💸':
 		balance = db.getBalance(message.chat.id)
 		bot.send_message(message.chat.id, f'💰Ваш баланс: {balance} pyб. Вы можете пополнить или вывести деньги. ', reply_markup = b)
 		db.setAns(message.chat.id, 0)
@@ -163,11 +164,11 @@ def messages(message):
 	if message.text == 'Реферальная система':
 		bot.send_message(message.chat.id, 'Вот ваша персональная ссылка для приглашения рефералов. Приглаcите не менее 3 человек чтобы можно было выводить деньги. \n https://t.me/Rusmm_bot?start=' + str(message.from_user.id))
 		
-	if message.text == 'Заказчикам':
+	if message.text == '💹Заказчикам💼':
 		db.setOder(message.chat.id)
 		bot.send_message(message.chat.id, 'Хотите сделать заказ? Что именно вы хотите накрутить? Цены указаны за 1 шт. Сначала пополните баланс до необходимово вам.', reply_markup=oder)
 		
-	if message.text == 'Зарабатывать':
+	if message.text == '⚒️Зарабатывать🛠️':
 		moderTask(message)
 		
 
