@@ -11,32 +11,33 @@ bot = telebot.TeleBot(config.TOKEN)
 
 # Главное меню
 menu = ReplyKeyboardMarkup(resize_keyboard = True)
-info = KeyboardButton("Как пользоваться ботом?")
-money = KeyboardButton('Баланс')
-order = KeyboardButton('Заказчикам')
-rab = KeyboardButton('Зарабатывать')
+info = KeyboardButton("🔐Профиль")
+money = KeyboardButton('💳Баланс💸')
+order = KeyboardButton('💹Заказчикам💼')
+rab = KeyboardButton('⚒️Зарабатывать🛠️')
 ref = KeyboardButton('Реферальная система')
 moder = KeyboardButton('Тех. поддержка')
 menu.add(info).add(money, ref).add(rab, order).add(moder)
 
 # Баланс
 b = InlineKeyboardMarkup(row_width = 1)
-put = InlineKeyboardButton("Пополнить баланс", callback_data = 'put')
-out = InlineKeyboardButton("Вывести деньги", callback_data = 'out')
+put = InlineKeyboardButton("💸Пополнить баланс", callback_data = 'put')
+out = InlineKeyboardButton("💰Вывести деньги", callback_data = 'out')
 b.add(put, out)
 
 # Заказчикам
 oder = InlineKeyboardMarkup(row_width = 1)
-like = InlineKeyboardButton("Лайки", callback_data = 'like')
-sub = InlineKeyboardButton("Подписки", callback_data = 'sub')
-watch = InlineKeyboardButton("Просмотры", callback_data = 'watch')
-comment = InlineKeyboardButton("Комментарии", callback_data = 'comment')
-feedback = InlineKeyboardButton("Отзывы", callback_data = 'feed')
-oder.add(like, sub, watch, comment, feedback)
+putb = InlineKeyboardButton("💸Пополнить баланс", callback_data = 'put')
+like = InlineKeyboardButton("👍Лайки 1 руб", callback_data = 'like')
+sub = InlineKeyboardButton("🌍Подписки 2 руб", callback_data = 'sub')
+watch = InlineKeyboardButton("📺Просмотры 2 руб", callback_data = 'watch')
+comment = InlineKeyboardButton("📃Комментарии 5 руб", callback_data = 'comment')
+feedback = InlineKeyboardButton("📨Отзывы 5 руб", callback_data = 'feed')
+oder.add(putb, like, sub, watch, comment, feedback)
 
 # Реферальная система
 referal = InlineKeyboardMarkup(row_width = 1)
-refe = InlineKeyboardButton("Вывести деньги", callback_data = 'out')
+refe = InlineKeyboardButton("💰Вывести деньги", callback_data = 'out')
 referal.add(refe)
 
 # Кнопки администратора
@@ -61,9 +62,9 @@ def start(message):
 	db.AddUser(message.chat.id)
 	reff = extract_unique_code(message.text)
 	for r in db.getAll():
-		if reff == r:
+		if reff == r and message.chat.id != reff:
 			db.setRef(r, db.getRef(r) + 1)
-			bot.send_message(r, f'По вашей ссылке присоеденился реферал! У вас {db.getBalance(r)} рефералов.')
+			bot.send_message(r, f'📊По вашей ссылке присоеденился реферал! У вас {db.getBalance(r)} рефералов.')
 	bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}! \n Рад приветсвовать тебя. Я бот, который поможет тебе накрутить подписки, лайки, комментарии, отзывы и просмотры. Здесь также можно зарабатывать выполняя простые задания.', reply_markup  = menu)
 	
 	
@@ -77,11 +78,11 @@ def extract_unique_code(text):
 def keyboard(c):
 	db = DB()
 	if c.data == 'put':
-		bot.send_message(c.message.chat.id, 'Для того чтобы пополнить баланс переведите деньги на карту: \n 4242 4242 4242 4242 \n затем пришлите сюда скриншот чека c подписью в виде цифры какую сумму вы перевели.')
+		bot.send_message(c.message.chat.id, 'Для того чтобы 💸пополнить 💳баланс переведите деньги на карту: \n 4242 4242 4242 4242 \n затем пришлите сюда скриншот чека c подписью в виде цифры какую сумму вы перевели.')
 		bot.register_next_step_handler(c.message, chek)
 	if c.data == 'out':
 		if db.getRef(c.message.chat.id) >= 3:
-			bot.send_message(c.message.chat.id, f'Пришлите сумму вывода, номер карты и банк куда вывести деньги. Ваш баланс: {db.getBalance(c.message.chat.id)}. Затем нажмите на кнопку.')
+			bot.send_message(c.message.chat.id, f'Пришлите сумму вывода💰, номер карты💳 и банк куда вывести деньги. Ваш баланс: {db.getBalance(c.message.chat.id)}. Затем нажмите на кнопку.')
 			bot.register_next_step_handler(c.message, cash)
 		else:
 			bot.send_message(c.message.chat.id, 'Чтобы вывести деньги вам необходимо пригласить миинимум трех человеек в бота. Внимание они должны зайти по вашей реферальной ссылке. Чтобы получить вашу реферальную ссылку нажмите на кнопку Реферальная система.', reply_markup=menu)
@@ -90,7 +91,7 @@ def keyboard(c):
 		bot.delete_message(c.message.chat.id, c.message.message_id)
 		id = c.message.caption.rsplit('= ', 2)[1]
 		db.updateBalance(id)
-		bot.send_message(id, f'Деньги зачислены на счет, ваш баланс: {db.getBalance(id)}')
+		bot.send_message(id, f'💸Деньги зачислены на счет, ваш баланс: {db.getBalance(id)}')
 	if c.data == 'n':
 		bot.delete_message(c.message.chat.id, c.message.message_id)
 		id = c.message.caption.rsplit('= ', 2)[1]
@@ -99,7 +100,7 @@ def keyboard(c):
 		id = int(c.message.text.rsplit('= ', 2)[1])
 		db.money(id, int(config.text))
 		bot.delete_message(c.message.chat.id, c.message.message_id)
-		bot.send_message(id, f'Деньги списаны со счета и переведены на указаную карту, ваш баланс: {db.getBalance(id)}')
+		bot.send_message(id, f'💰Деньги списаны со счета и переведены на указаную карту, ваш баланс: {db.getBalance(id)}')
 		
 	if c.data == 'like' or c.data == 'sub' or c.data == 'watch' or c.data == 'comment' or c.data == 'feed':
 		task = {
@@ -151,12 +152,12 @@ def messages(message):
 	if message.chat.id == config.admin:
 		config.text = message.text
 	config.id = message.chat.id
-	if message.text == 'Как пользоваться ботом?':
-		bot.send_message(message.chat.id, 'Вот небольшая презентация об этом боте.')
+	if message.text == 'Профиль':
+		bot.send_message(message.chat.id, f'📋Имя: {message.from_user.first_name} \n 💳Баланс: {db.getBalance(message.chat.id)} \n Рефералы: {db.getRef(message.chat.id)} \n 📑Количество выплненых заданий: {db.getNum(message.chat.id)}')
 	
 	if message.text == 'Баланс':
 		balance = db.getBalance(message.chat.id)
-		bot.send_message(message.chat.id, f'Ваш баланс: {balance} pyб. Вы можете пополнить или вывести деньги. ', reply_markup = b)
+		bot.send_message(message.chat.id, f'💰Ваш баланс: {balance} pyб. Вы можете пополнить или вывести деньги. ', reply_markup = b)
 		db.setAns(message.chat.id, 0)
 		
 	if message.text == 'Реферальная система':
@@ -164,7 +165,7 @@ def messages(message):
 		
 	if message.text == 'Заказчикам':
 		db.setOder(message.chat.id)
-		bot.send_message(message.chat.id, 'Хотите сделать заказ? Что именно вы хотите накрутить?', reply_markup=oder)
+		bot.send_message(message.chat.id, 'Хотите сделать заказ? Что именно вы хотите накрутить? Цены указаны за 1 шт. Сначала пополните баланс до необходимово вам.', reply_markup=oder)
 		
 	if message.text == 'Зарабатывать':
 		moderTask(message)
@@ -240,6 +241,7 @@ def moderTask(message):
 		comment = db.getComment(num)
 		link = db.getLink(num)[num]
 		t = task
+		db.moneyTask(num, 1)
 		#print(link)
 		
 		taskText = {

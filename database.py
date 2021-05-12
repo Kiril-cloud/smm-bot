@@ -252,3 +252,19 @@ class DataBase():
 		b = b.replace(',', '')
 		b = b.replace(')', '')
 		return b
+		
+	def moneyTask(self, rowid, sum):
+		self.sql.execute(f""" SELECT money FROM oder WHERE rowid = {rowid} """)
+		b = self.sql.fetchone()
+		b = str(b)
+		b = b.replace('(', '')
+		b = b.replace(',', '')
+		b = b.replace(')', '')
+		try:
+			b = float(b)
+			b-=sum
+		except:
+			b = int(b)
+			b-=sum
+		self.sql.execute(f' UPDATE users SET money = {b} WHERE id = {id} ')
+		self.db.commit()
