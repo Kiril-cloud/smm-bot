@@ -67,7 +67,7 @@ class DataBase():
 			pass
 		
 	def updateBalance(self, id):
-		try:
+		
 			self.sql.execute(f""" SELECT cash FROM users WHERE id = {id} """)
 			b = self.sql.fetchone()
 			b = str(b)
@@ -85,8 +85,7 @@ class DataBase():
 			b+=c
 			self.sql.execute(f' UPDATE users SET money = {b} WHERE id = {id} ')
 			self.db.commit()
-		except Exception as e:
-			pass
+		
 		
 	def money(self, id, sum):
 		try:
@@ -175,7 +174,7 @@ class DataBase():
 		
 			return b
 		except Exception as e:
-			pass
+			print(e, 'getTask')
 		
 	def setMoney(self, id, s):
 		try:
@@ -217,13 +216,14 @@ class DataBase():
 		try:
 			self.sql.execute(f""" SELECT tasks FROM users WHERE id = {id} """)
 			b = self.sql.fetchone()
+			print(b)
 			b = str(b)
 			b = b.replace('(', '')
 			b = b.replace(',', '')
 			b = b.replace(')', '')
 			b = int(b)
 			b+=num
-			print(b)
+			
 			self.sql.execute(f' UPDATE users SET tasks = {b} WHERE id = {id} ')
 			self.db.commit()
 		except Exception as e:
