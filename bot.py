@@ -54,9 +54,10 @@ def start(message):
 		db.AddUser(message.chat.id)
 		reff = extract_unique_code(message.text)
 		for r in db.getAll():
+			print(r, reff)
 			if reff == r and message.chat.id != reff:
-				db.setRef(r, db.getRef(r) + 1)
-				bot.send_message(r, f'📊По вашей ссылке присоеденился реферал! У вас {db.getBalance(r)} рефералов.')
+				db.setRef(reff, db.getRef(r) + 1)
+				bot.send_message(r, f'📊По вашей ссылке присоеденился реферал! У вас {db.getRef(r)} рефералов.')
 		bot.send_message(message.chat.id, f'Привет, {message.from_user.first_name}! \n Рад приветсвовать тебя. Я бот, который поможет тебе  зарабатывать выполняя простые задания.', reply_markup  = menu)
 	except Exception as e:
 		pass
@@ -96,10 +97,16 @@ def keyboard(c):
 			id = c.message.caption.rsplit('= ', 2)[1]
 			bot.send_message(id, 'Заявка на пополнение счета отклонена.')
 		if c.data == 'com':
-			id = int(c.message.text.rsplit('= ', 2)[1])
-			db.money(id, int(config.text))
-			bot.delete_message(c.message.chat.id, c.message.message_id)
-			bot.send_message(id, f'💰Деньги списаны со счета и переведены на указаную карту, ваш баланс: {db.getBalance(id)}')
+			try:
+				id = int(c.message.text.rsplit('= ', 2)[1])
+				db.money(id, int(config.text))
+				bot.delete_message(c.message.chat.id, c.message.message_id)
+				bot.send_message(id, f'💰Деньги списаны со счета и переведены на указаную карту, ваш баланс: {db.getBalance(id)}')
+			except:
+				id = int(c.message.text.rsplit('= ', 2)[1])
+				db.money(id, float(config.text))
+				bot.delete_message(c.message.chat.id, c.message.message_id)
+				bot.send_message(id, f'💰Деньги списаны со счета и переведены на указаную карту, ваш баланс: {db.getBalance(id)}')
 	
 		if c.data == 'next':
 			db.setNum(message.from_user.id, 1)
@@ -154,7 +161,7 @@ def messages(message):
 			db.setAns(message.chat.id, 0)
 			
 		if message.text == 'Реферальная система':
-			bot.send_message(message.chat.id, 'Вот ваша персональная ссылка для приглашения рефералов. Приглаcите не менее 3 человек чтобы можно было выводить деньги. \n https://t.me/Rusmm_bot?start=' + str(message.from_user.id))
+			bot.send_message(message.chat.id, 'Вот ваша персональная ссылка для приглашения рефералов. Приглаcите не менее 3 человек чтобы можно было выводить деньги. \n https://t.me/mnogodeneg_bot?start=' + str(message.from_user.id))
 			
 		if message.text == '💹Заказчикам💼':
 			db.setOder(message.chat.id)
@@ -199,7 +206,7 @@ def moderTask(message):
 			comment = db.getComment(num)
 			link = db.getLink(num)[num]
 			t = task
-			db.moneyTask(num, 1)
+			db.moneyTask(num, -1)
 			#print(link)
 			
 			taskText = {

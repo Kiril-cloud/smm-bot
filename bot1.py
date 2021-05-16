@@ -15,7 +15,7 @@ bot = telebot.TeleBot(config.TOCEN)
 menu = ReplyKeyboardMarkup(resize_keyboard = True)
 money = KeyboardButton('💳Баланс💸')
 order = KeyboardButton('💹Сделать заказ💼')
-menu.add(info).add(money, oder)
+menu.add(money, order)
 
 # Баланс
 b = InlineKeyboardMarkup(row_width = 1)
@@ -103,6 +103,9 @@ def messages(message):
 		if message.chat.id == config.admin:
 			config.text = message.text
 		config.id = message.chat.id
+		
+		if message.text == '🔐Профиль':
+			bot.send_message(message.chat.id, f'📋Имя: {message.from_user.first_name} \n 💳Баланс: {db.getBalance(message.chat.id)} \n Рефералы: {db.getRef(message.chat.id)} \n 📑Количество выплненых заданий: {db.getNum(message.chat.id)}')
 		
 		if message.text == '💳Баланс💸':
 			balance = db.getBalance(message.chat.id)

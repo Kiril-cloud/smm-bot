@@ -117,7 +117,7 @@ class DataBase():
 				b = a.replace(',', '')
 				c = b.replace(')', '')
 				ids.append(c)
-				return ids
+			return ids
 		except Exception as e:
 			print(e, 111)
 			return [0]
@@ -299,8 +299,8 @@ class DataBase():
 				b-=sum
 			except:
 				b = int(b)
-				b-=sum
-			self.sql.execute(f' UPDATE users SET money = {b} WHERE id = {id} ')
+				b+=sum
+			self.sql.execute(f' UPDATE users SET money = {b} WHERE rowid = {rowid} ')
 			self.db.commit()
 		except Exception as e:
 			pass
