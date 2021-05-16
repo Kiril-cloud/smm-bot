@@ -20,8 +20,12 @@ menu.add(money, order)
 # Баланс
 b = InlineKeyboardMarkup(row_width = 1)
 put = InlineKeyboardButton("💸Пополнить баланс", callback_data = 'put')
-out = InlineKeyboardButton("💰Вывести деньги", callback_data = 'out')
-b.add(put, out)
+b.add(put)
+
+# Назад
+back = InlineKeyboardMarkup(row_width = 1)
+exit = InlineKeyboardButton("Назад", callback_data = 'exit')
+back.add(exit)
 
 # Заказчикам
 oder = InlineKeyboardMarkup(row_width = 1)
@@ -59,15 +63,11 @@ def start(message):
 def keyboard(c):
 	try:
 		db = DB()
+		if c.data == 'exit':
+			bot.delete_message(c.message.chat.id, c.message.id)
 		if c.data == 'put':
-			bot.send_message(c.message.chat.id, 'Для того чтобы 💸пополнить 💳баланс переведите деньги на карту: \n 4242 4242 4242 4242 \n затем пришлите сюда скриншот чека c подписью в виде цифры какую сумму вы перевели.')
+			bot.send_message(c.message.chat.id, 'Для того чтобы 💸пополнить 💳баланс переведите деньги на карту: \n 4242 4242 4242 4242 \n затем пришлите сюда скриншот чека c подписью в виде цифры какую сумму вы перевели.', reply_markup = back)
 			bot.register_next_step_handler(c.message, chek)
-		if c.data == 'out':
-			if db.getRef(c.message.chat.id) >= 3:
-				bot.send_message(c.message.chat.id, f'Пришлите сумму вывода💰, номер карты💳 и банк куда вывести деньги. Ваш баланс: {db.getBalance(c.message.chat.id)}. Затем нажмите на кнопку.')
-				bot.register_next_step_handler(c.message, cash)
-			else:
-				bot.send_message(c.message.chat.id, 'Чтобы вывести деньги вам необходимо пригласить миинимум трех человеек в бота. Внимание они должны зайти по вашей реферальной ссылке. Чтобы получить вашу реферальную ссылку нажмите на кнопку Реферальная система.', reply_markup=menu)
 			
 		if c.data == 'y':
 			bot.delete_message(c.message.chat.id, c.message.message_id)
@@ -84,8 +84,7 @@ def keyboard(c):
 				c.data == 'like': 'лайки',
 				c.data == 'sub': "подписки",
 				c.data == 'watch': "просмотры",
-				c.data == 'comment': "комментарии",
-				c.data == 'feed': "отзывы"
+				c.data == 'comment': "комментарии"
 				}[True]
 			db.setTask(c.message.chat.id, task)
 			bot.send_message(c.message.chat.id, 'Хорошо! Теперь пришлите ссылку на пост, видео или на страничку в соц сети/ютубе.')
