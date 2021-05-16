@@ -12,7 +12,6 @@ bot = telebot.TeleBot(config.TOCEN)
 
 # Главное меню
 menu = ReplyKeyboardMarkup(resize_keyboard = True)
-info = KeyboardButton("🔐Профиль")
 money = KeyboardButton('💳Баланс💸')
 order = KeyboardButton('💹Сделать заказ💼')
 menu.add(info).add(money, oder)
@@ -103,15 +102,13 @@ def messages(message):
 		if message.chat.id == config.admin:
 			config.text = message.text
 		config.id = message.chat.id
-		if message.text == '🔐Профиль':
-			bot.send_message(message.chat.id, f'📋Имя: {message.from_user.first_name}'')
 		
 		if message.text == '💳Баланс💸':
 			balance = db.getBalance(message.chat.id)
 			bot.send_message(message.chat.id, f'💰Ваш баланс: {balance} pyб. Вы можете пополнить или вывести деньги. ', reply_markup = b)
 			db.setAns(message.chat.id, 0)
 			
-		if message.text == '💹Заказчикам💼':
+		if message.text == '💹Сделать заказ💼':
 			db.setOder(message.chat.id)
 			bot.send_message(message.chat.id, f'Что вы хотите накрутить? Цены указаны за один лайк/коммент и тд. Сначала пополните баланс до необходимой суммы. Ваш баланс: {db.getBalance(message.from_user.id)}', reply_markup=oder)
 

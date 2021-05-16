@@ -157,7 +157,7 @@ def messages(message):
 			
 		if message.text == '💹Заказчикам💼':
 			db.setOder(message.chat.id)
-			bot.send_message(message.chat.id, 'Чтобы сделать заказ напишите боту @mnogodeneg_bot')
+			bot.send_message(message.chat.id, 'Чтобы сделать заказ напишите боту @mnogolike_bot')
 			
 		if message.text == '⚒️Зарабатывать🛠️':
 			moderTask(message)
