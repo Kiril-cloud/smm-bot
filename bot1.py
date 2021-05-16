@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+# -*- coding: utf-8 -*-
 import telebot
 from telebot.types import ReplyKeyboardRemove, \
     ReplyKeyboardMarkup, KeyboardButton, \
