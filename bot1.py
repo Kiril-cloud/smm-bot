@@ -65,8 +65,13 @@ def keyboard(c):
 		db = DB()
 		if c.data == 'exit':
 			bot.delete_message(c.message.chat.id, c.message.id)
+			bot.register_next_step_handler(c.message, messages)
 		if c.data == 'put':
-			bot.send_message(c.message.chat.id, 'Для того чтобы 💸пополнить 💳баланс переведите деньги на карту: \n 4242 4242 4242 4242 \n затем пришлите сюда скриншот чека c подписью в виде цифры какую сумму вы перевели.', reply_markup = back)
+			oplata = InlineKeyboardMarkup(row_width=1)
+			link = InlineKeyboardButton('Оплатить', url=f'https://qiwi.com/payment/form/99?amountFraction=0&currency=RUB&extra%5B%27account%27%5D=+79626025949&extra%5B%27comment%27%5D={c.message.chat.id}&blocked[0]=account&blocked[1]=comment')
+			back = InlineKeyboardButton('Назад', callback_data='exit')
+			oplata.add(link, back)
+			bot.send_message(c.message.chat.id, 'Для того чтобы 💸пополнить 💳баланс нажмите на кнопку(вы перейдете на страницу оплаты), переведите нужную сумму, затем пришлите сюда скриншот чека c подписью в виде цифры какую сумму вы перевели.', reply_markup = oplata)
 			bot.register_next_step_handler(c.message, chek)
 			
 		if c.data == 'y':
@@ -126,8 +131,7 @@ def chek(message):
 		db.setCash(message.chat.id, caption)
 		bot.send_photo(config.admin, photo, caption + 'id = ' + str(message.chat.id), reply_markup=verifi)
 	except Exception as e:
-		bot.send_message(message.chat.id, 'Неверный формат! Надо прислать фото с подписью в которой должны быть только цифры. Попробуйте еще раз.')
-		bot.register_next_step_handler(message, chek)
+		bot.register_next_step_handler(message, messages)
 		
 
 def setLink(message):

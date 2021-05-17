@@ -15,10 +15,9 @@ bot = telebot.TeleBot(config.TOKEN)
 menu = ReplyKeyboardMarkup(resize_keyboard = True)
 info = KeyboardButton("🔐Профиль")
 money = KeyboardButton('💳Баланс💸')
-order = KeyboardButton('💹Заказчикам💼')
 rab = KeyboardButton('⚒️Зарабатывать🛠️')
 ref = KeyboardButton('Реферальная система')
-menu.add(info).add(money, ref).add(rab, order)
+menu.add(rab, info).add(money, ref)
 
 # Баланс
 b = InlineKeyboardMarkup(row_width = 1)
@@ -80,11 +79,15 @@ def extract_unique_code(text):
 def keyboard(c):
 	try:
 		db = DB()
+		config.outb = 1
 		if c.data == 'exit':
 			bot.delete_message(c.message.chat.id, c.message.id)
+			bot.delete_message(c.message.chat.id, c.message.id-1)
+			bot.register_next_step_handler(c.message, messages)
 		if c.data == 'out':
+			config.outb=0
 			if db.getRef(c.message.chat.id) >= 3:
-				bot.send_message(c.message.chat.id, f'Пришлите сумму вывода💰, номер карты💳 и банк куда вывести деньги. Ваш баланс: {db.getBalance(c.message.chat.id)}. Затем нажмите на кнопку.', reply_markup = back)
+				bot.send_message(c.message.chat.id, f'Минимальная сумма вывода 100 руб. Пришлите сумму вывода💰, номер карты💳 и банк куда вывести деньги. Ваш баланс: {db.getBalance(c.message.chat.id)}.', reply_markup = back)
 				bot.register_next_step_handler(c.message, cash)
 			else:
 				bot.send_message(c.message.chat.id, 'Чтобы вывести деньги вам необходимо пригласить миинимум трех человеек в бота. Внимание они должны зайти по вашей реферальной ссылке. Чтобы получить вашу реферальную ссылку нажмите на кнопку Реферальная система.', reply_markup=menu)
@@ -173,7 +176,7 @@ def messages(message):
 		if message.text == '⚒️Зарабатывать🛠️':
 			moderTask(message)
 	except Exception as e:
-		pass		
+		pass
 
 def chek(message):
 	try:
@@ -183,21 +186,20 @@ def chek(message):
 		db.setCash(message.chat.id, caption)
 		bot.send_photo(config.admin, photo, caption + 'id = ' + str(message.chat.id), reply_markup=verifi)
 	except Exception as e:
-		bot.send_message(message.chat.id, 'Неверный формат! Надо прислать фото с подписью в которой должны быть только цифры. Попробуйте еще раз.')
-		bot.register_next_step_handler(message, chek)
+		pass
 		
 
 def cash(message):
+	bot.register_next_step_handler(message, messages)
 	try:
 		db = DB()
 		id = message.chat.id
 		if db.getBalance(message.chat.id) > 99:
 			bot.send_message(config.admin, 'Не забудте указать сумму списания перед тем как нажать кнопку!!! Вот данные от пользователя: ' + message.text + '\n' + 'Текущий баланс пользователя: ' + str(db.getBalance(message.chat.id)) + '\n id = ' + str(id), reply_markup=compleet)
-			bot.send_message(id, 'Ваша заявка отправлена! Ожидайте.')
-		else:
-			bot.send_message(message.chat.id, "У вас недостаточно средств для вывода денег. Минимальная сумма вывода: 100р")
+			bot.send_message(id, 'Ваша заявка отправлена! Ожидайте.')	
+		
 	except Exception as e:
-		pass
+		print(e, 204)
 			
 			
 def moderTask(message):
