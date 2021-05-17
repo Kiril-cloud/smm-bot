@@ -159,10 +159,8 @@ class DataBase():
 			
 	def setOder(self, id):
 		try:
-			self.sql.execute(f""" SELECT id FROM oder WHERE id = {id} """)
-			if self.sql.fetchone() is None:
-				self.sql.execute('INSERT INTO oder VALUES(?, ?, ?, ?, ?)', (id, '0', 0, 0, '0'))
-				self.db.commit()
+			self.sql.execute('INSERT INTO oder VALUES(?, ?, ?, ?, ?)', (id, '0', 0, 0, '0'))
+			self.db.commit()
 		except Exception as e:
 			print(e, 150)
 			
