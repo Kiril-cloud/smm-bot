@@ -275,7 +275,7 @@ def moderka(message):
 		bot.send_photo(config.moderator, photo, text, reply_markup=moderator)
 		moderTask(message)
 	except Exception as e:
-		pass
+		print(e)
 		
 	
 bot.polling()
