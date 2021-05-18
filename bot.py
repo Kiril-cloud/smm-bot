@@ -16,8 +16,9 @@ menu = ReplyKeyboardMarkup(resize_keyboard = True)
 info = KeyboardButton("🔐Профиль")
 money = KeyboardButton('💳Баланс💸')
 rab = KeyboardButton('⚒️Зарабатывать🛠️')
-ref = KeyboardButton('Реферальная система')
-menu.add(rab, info).add(money, ref)
+ref = KeyboardButton('📊Реферальная система')
+rules = KeyboardButton('📖Правила')
+menu.add(rules).add(rab, info).add(money, ref)
 
 # Баланс
 b = InlineKeyboardMarkup(row_width = 1)
@@ -87,7 +88,7 @@ def keyboard(c):
 		if c.data == 'out':
 			config.outb=0
 			if db.getRef(c.message.chat.id) >= 3:
-				bot.send_message(c.message.chat.id, f'Минимальная сумма вывода 100 руб. Пришлите сумму вывода💰, номер карты💳 и банк куда вывести деньги. Ваш баланс: {db.getBalance(c.message.chat.id)}.', reply_markup = back)
+				bot.send_message(c.message.chat.id, f'💵Минимальная сумма вывода 100 руб. \n Пришлите сумму вывода💰, номер карты💳 и банк куда вывести деньги. \n  Ваш баланс: {db.getBalance(c.message.chat.id)}.', reply_markup = back)
 				bot.register_next_step_handler(c.message, cash)
 			else:
 				bot.send_message(c.message.chat.id, 'Чтобы вывести деньги вам необходимо пригласить миинимум трех человеек в бота. Внимание они должны зайти по вашей реферальной ссылке. Чтобы получить вашу реферальную ссылку нажмите на кнопку Реферальная система.', reply_markup=menu)
@@ -159,19 +160,37 @@ def messages(message):
 			config.text = message.text
 		config.id = message.chat.id
 		if message.text == '🔐Профиль':
-			bot.send_message(message.chat.id, f'📋Имя: {message.from_user.first_name} \n 💳Баланс: {db.getBalance(message.chat.id)} \n Рефералы: {db.getRef(message.chat.id)} \n 📑Количество выплненых заданий: {db.getNum(message.chat.id)}')
+			bot.send_message(message.chat.id, f'📋Имя: {message.from_user.first_name} \n 💳Баланс: {db.getBalance(message.chat.id)} \n 📊Рефералы: {db.getRef(message.chat.id)} \n 📑Количество выплненых заданий: {db.getNum(message.chat.id)}')
 		
 		if message.text == '💳Баланс💸':
 			balance = db.getBalance(message.chat.id)
-			bot.send_message(message.chat.id, f'💰Ваш баланс: {balance} pyб. Вы можете пополнить или вывести деньги. ', reply_markup = b)
+			bot.send_message(message.chat.id, f'💰Ваш баланс: {balance} pyб.', reply_markup = b)
 			db.setAns(message.chat.id, 0)
 			
-		if message.text == 'Реферальная система':
+		if message.text == '📊Реферальная система':
 			bot.send_message(message.chat.id, 'Вот ваша персональная ссылка для приглашения рефералов. Приглаcите не менее 3 человек чтобы можно было выводить деньги. \n https://t.me/mnogodeneg_bot?start=' + str(message.from_user.id))
 			
-		if message.text == '💹Заказчикам💼':
-			db.setOder(message.chat.id)
-			bot.send_message(message.chat.id, 'Чтобы сделать заказ напишите боту @mnogolike_bot')
+		if message.text == '📖Правила':
+			bot.send_message(message.chat.id, f"""Информация:
+
+  Ваш ID: {message.chat.id}
+  Ссылка для приглашения : https://t.me/mnogodeneg_bot?start={message.from_user.id}
+
+⛔️ Исполнителям запрещено:
+• Иметь более одного аккаунта.
+• Использовать ПО для автоматизации действий в боте.
+• Отписываться от канала раннее 7ми дней с момента подписки(штраф 1 рубль).
+• Пополнять баланс для заказа минимальной выплаты.
+• Брать заказ на действие и не выполнять его.
+• Сдавать скриншот или фото не соответствующее описанию к заданию или не свой скриншот.
+• Иметь нечеловекоподобные логин или имя на аккаунте.
+• За флуд в сапорт - БАН!
+
+💵 Выплаты:
+• Выплаты осуществляются в течение суток с момента заказа в рабочие дни.
+• Выплаты производятся на кошельки Yandex и Qiwi
+
+Admin: @Basadeneg""")
 			
 		if message.text == '⚒️Зарабатывать🛠️':
 			moderTask(message)
@@ -254,6 +273,7 @@ def moderka(message):
 		photo = message.photo[0].file_id
 		text = f'задание: {task}' + '\n id = ' + str(message.chat.id)
 		bot.send_photo(config.moderator, photo, text, reply_markup=moderator)
+		moderTask(message)
 	except Exception as e:
 		pass
 		
