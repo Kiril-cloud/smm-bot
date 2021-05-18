@@ -268,7 +268,8 @@ def moderTask(message):
 def moderka(message):
 	try:
 		db = DB()
-		task = db.getTask(message.chat.id)
+		num = db.getNum(message.chat.id)-1
+		task = db.getWork(num)
 		print(task)
 		photo = message.photo[0].file_id
 		text = f'задание: {task}' + '\n id = ' + str(message.chat.id)
