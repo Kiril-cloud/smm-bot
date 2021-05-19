@@ -139,9 +139,9 @@ def keyboard(c):
 			t = text.rsplit('id = ', 2)[0]
 			t = t[ 9 : -2]
 			cost = {
-				t == 'подписки':0.4,
-				t == 'лайки': 0.2,
-				t  == 'просмотры': '0,4',
+				t == 'подписки':0.5,
+				t == 'лайки': 0.5,
+				t  == 'просмотры': 0.4,
 				t == 'комментарии': 1,
 				t == 'отзывы': 5
 				}[True]
@@ -241,8 +241,8 @@ def moderTask(message):
 					}[True]
 					
 			cost = {
-				t == 'подписки': 0.4,
-				t == 'лайки': 0.2,
+				t == 'подписки': 0.5,
+				t == 'лайки': 0.5,
 				t  == 'просмотры': 0.4,
 				t == 'комментарии': 1
 				}[True]
@@ -268,8 +268,7 @@ def moderTask(message):
 def moderka(message):
 	try:
 		db = DB()
-		num = db.getNum(message.chat.id)-1
-		task = db.getWork(num)
+		task = db.getTask(message.chat.id)
 		print(task)
 		photo = message.photo[0].file_id
 		text = f'задание: {task}' + '\n id = ' + str(message.chat.id)
